@@ -5,7 +5,7 @@ const CONF = {
         host: 'localhost',
         port: 3306,
         user: 'root',
-        db: 'SignUp4Exams',
+        db: 'singup4exams',
         pass: 'pass123456',
         char: 'utf8mb4'
     },
