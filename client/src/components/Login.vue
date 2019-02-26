@@ -5,30 +5,92 @@
         <h1 class="title">考试在线报名系统</h1>
         <div class="mainin1">
           <ul>
-            <li><span>用户名：</span><input v-model="username" name="loginName" type="text" id="loginName" placeholder="登录名" class="SearchKeyword"></li>
-            <li><span>密码：</span><input v-model="password" type="password" name="Possword" id="Possword" placeholder="密码" class="SearchKeyword2"></li>
+            <li><input v-model="username" type="text" placeholder="邮箱" class="SearchKeyword"></li>
+            <li><input v-model="password" type="password" placeholder="密码" class="SearchKeyword2"></li>
+            <li style="margin-top:-5px">
+              <div style="float:left;margin-top:12px;margin-left:3px"><span>验证码：</span></div>
+              <div class="code" @click="refreshCode" style="float:left"><s-identify :identifyCode="identifyCode"></s-identify></div>
+              <div style="float:left;margin-left:20px;margin-top:13px">
+                <input v-model="identify" type="text" placeholder="验证码" class="SearchKeyword3" maxlength="4">
+              </div>
+            </li>
             <li><button class="tijiao" @click="login">提交</button></li>
-            <li><a href="#">注册用户</a>&nbsp;&nbsp;<a href="#">忘记密码</a></li>
+            <li><a @click="reg">注册用户</a>&nbsp;&nbsp;<a @click="forgot">忘记密码</a></li>
           </ul>
         </div>
       </div>
     </div>
+    <el-dialog title="注册" :visible.sync="regVisible" width="30%">
+      <el-input placeholder="邮箱"></el-input>
+      <el-input placeholder="密码"></el-input>
+      <el-input placeholder="确认密码"></el-input>
+      <el-input placeholder="真实姓名"></el-input>
+      <el-button style="margin-top:10px">注册</el-button>
+    </el-dialog>
+    <el-dialog title="找回密码" :visible.sync="forgotVisible" width="30%"></el-dialog>
   </div>
 </template>
 
 <script>
+import SIdentify from './identify'
 export default {
-    methods:{
-        login:function(){
-            alert('login test')
-        }
+  components: {
+    's-identify': SIdentify
+  },
+  methods: {
+    reg(){
+      this.regVisible = true
     },
-    data(){
-        return{
-            username:'',
-            password:'',
-        }
+    login: function () {
+      if (this.identify != this.identifyCode) {
+        this.$message.error('验证码错误')
+      } else {
+        this.$axios.get('http://rap2api.taobao.org/app/mock/148593/users', {
+          params: {
+            email: this.username,
+            password: this.$md5(this.password)
+          },
+          withCredentials: true
+        }).then(function (r) {
+          console.log(r.data.state)
+        }).catch(function (r) {
+          console.log(r)
+        })
+      }
+    },
+    randomNum(min, max) {
+      return Math.floor(Math.random() * (max - min) + min);
+    },
+    refreshCode() {
+      this.identifyCode = "";
+      this.makeCode(this.identifyCodes, 4);
+    },
+    makeCode(o, l) {
+      for (let i = 0; i < l; i++) {
+        this.identifyCode += this.identifyCodes[
+          this.randomNum(0, this.identifyCodes.length)
+        ];
+      }
+    },
+    forgot(){
+      this.forgotVisible = true;
     }
+  },
+  data() {
+    return {
+      username: '',
+      password: '',
+      identify: '',
+      identifyCodes: "1234567890",
+      identifyCode: "",
+      regVisible:false,
+      forgotVisible:false,
+    }
+  },
+  mounted() {
+    this.identifyCode = "";
+    this.makeCode(this.identifyCodes, 4);
+  }
 }
 </script>
 
@@ -43,11 +105,23 @@ body{background: #006eb0 url(../assets/lgbg.png) center top no-repeat;clear: bot
 .mainin1 ul li{ float:left; width:100%; overflow:hidden; padding-bottom:25px;}
 .mainin1 ul li span, .mainin1 ul li input{ float:left;}
 .mainin1 ul li span{ width:100%; clear:both; color:#6f6f6f; font-family:"Microsoft YaHei"; font-size:14px; line-height:37px;}
+.main1 ul li a{font-size:30px}
 .SearchKeyword {border:1px solid #c8c8c8;width: 202px;color: #999;font-size:12px; line-height:35px; background:url(../assets/srbg.png) no-repeat; height:35px; width:317px; padding-left:10px;}
 .SearchKeyword2 {border:1px solid #c8c8c8;width: 202px;color: #999;font-size:12px; line-height:35px; background:url(../assets/srbg.png) no-repeat; height:35px; width:317px; padding-left:10px;}
+.SearchKeyword3 {border:1px solid #c8c8c8;width: 202px;color: #999;font-size:12px; line-height:35px; background:url(../assets/srbg.png) no-repeat; height:35px; width:100px; padding-left:10px;}
+
 @media screen and (-webkit-min-device-pixel-ratio:0){.SearchKeyword2 {border:1px solid #c8c8c8;width: 202px;color: #999;line-height:35px; background:url(../assets/srbg.png) no-repeat; height:35px; width:317px; padding-left:10px;}}
 .SearchKeywordonFocus, .SearchKeywordonFocus2{border:1px solid #3c9ae9;width: 202px;line-height:35px;color: #333;font-size:14px; background:url(../assets/srbg.png) no-repeat; height:35px; width:317px; padding-left:10px;}
 @media screen and (-webkit-min-device-pixel-ratio:0){.SearchKeywordonFocus2{ font-size:25px;}}
-.tijiao{ float:left; margin:13px 0px 0px 70px; height:42px; width:190px; background:none; border:none; background:url(../assets/dl.png) no-repeat; font-weight:bold; text-align:center; color:#fff; font-size:20px;font-family:"Microsoft YaHei"; cursor:pointer;}
+.tijiao{ float:left; margin:0px 0px 0px 70px; height:42px; width:190px; background:none; border:none; background:url(../assets/dl.png) no-repeat; font-weight:bold; text-align:center; color:#fff; font-size:20px;font-family:"Microsoft YaHei"; cursor:pointer;}
+.code {
+  margin: 10px auto;
+  width: 114px;
+  height: 40px;
+  border: 1px solid red;
+}
+.el-dialog .el-input{
+  padding: 5px;
+}
 
 </style>

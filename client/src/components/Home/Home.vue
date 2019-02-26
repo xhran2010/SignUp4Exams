@@ -6,20 +6,15 @@
       </el-header>
       <el-container>
         <el-aside width="12%">
-            <el-menu default-active="1" background-color="#f0f8fc">
-                <el-menu-item index="1">
+            <el-menu router=true default-active="1" background-color="#f0f8fc">
+                <el-menu-item index="/home/default">
                     <i class="el-icon-location" style="margin-bottom:3px"></i>首页
                 </el-menu-item>
-                <el-submenu index="2">
-                    <template slot="title">
-                        <i class="el-icon-edit" style="margin-bottom:3px"></i>我的信息
-                    </template>
-                    <el-menu-item index="2-1"><i class="el-icon-caret-right" style="margin-bottom:3px"></i>信息详情</el-menu-item>
-                    <el-menu-item index="2-2"><i class="el-icon-caret-right" style="margin-bottom:3px"></i>修改密码</el-menu-item>
-                </el-submenu>
-                <el-menu-item index="3"><i class="el-icon-document" style="margin-bottom:3px"></i>考试报名</el-menu-item>
-                <el-menu-item index="4"><i class="el-icon-goods" style="margin-bottom:3px"></i>缴费管理</el-menu-item>
-                <el-menu-item index="5"><i class="el-icon-printer" style="margin-bottom:3px"></i>分数查询</el-menu-item>
+                <el-menu-item index="/home/profile">
+                  <i class="el-icon-edit" style="margin-bottom:3px"></i>我的信息
+                </el-menu-item>
+                <el-menu-item index="/home/signup"><i class="el-icon-document" style="margin-bottom:3px"></i>考试报名</el-menu-item>
+                <el-menu-item index="/home/myexams"><i class="el-icon-date" style="margin-bottom:3px"></i>我的考试</el-menu-item>
             </el-menu>
         </el-aside>
         <el-main><router-view></router-view></el-main>
