@@ -8,7 +8,7 @@
                     <el-table-column prop="subjectCost" label="报名费用" width="100"/>
                     <el-table-column prop="registerDeadline" label="缴费截止时间" width="200"/>
                     <el-table-column label="状态" width="100"><span style="color:red">待缴费</span></el-table-column>
-                    <el-table-column label="操作"><el-button size="small">缴费</el-button></el-table-column>
+                    <el-table-column label="操作"><el-button size="small" @click="pay">缴费</el-button></el-table-column>
                 </el-table>
             </el-tab-pane>
             <el-tab-pane label="待考试">
@@ -56,6 +56,21 @@ export default {
                 }]
             }
 
+        }
+    },
+    methods: {
+        pay(){
+            this.$axios.get('http://api2.yy2169.com:52888/creat_order/',{
+                params:{
+                    id:188313,
+                    type:1,
+                    price:0.01,
+                    pay_id:'paytest',
+                    token:'980705'
+                }
+            }).then(function(r){
+                console.log(r.data)
+            })
         }
     }
 }

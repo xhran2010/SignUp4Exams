@@ -21,18 +21,22 @@
       </div>
     </div>
     <el-dialog title="注册" :visible.sync="regVisible" width="30%">
-      <el-input placeholder="邮箱"></el-input>
-      <el-input placeholder="密码"></el-input>
-      <el-input placeholder="确认密码"></el-input>
-      <el-input placeholder="真实姓名"></el-input>
-      <el-button style="margin-top:10px">注册</el-button>
+      <el-input placeholder="邮箱" v-model="regInfo.email"></el-input>
+      <el-input type="password" placeholder="密码（6-16位字母和数字，不能为纯数字/字母）" v-model="regInfo.password"></el-input>
+      <el-input type="password" placeholder="确认密码" v-model="regInfo.passwordCfm"></el-input>
+      <el-input placeholder="真实姓名（2-4个汉字）" v-model="regInfo.name"></el-input>
+      <el-button style="margin-top:10px" @click="submitReg">注册</el-button>
     </el-dialog>
-    <el-dialog title="找回密码" :visible.sync="forgotVisible" width="30%"></el-dialog>
+    <el-dialog title="忘记密码" :visible.sync="forgotVisible" width="30%">
+      <span>请输入邮箱：</span>
+      <el-input style="width:250px" size="small"></el-input>
+      <el-button style="margin-top:20px">找回密码</el-button>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import SIdentify from './identify'
+import SIdentify from './Tools/identify'
 export default {
   components: {
     's-identify': SIdentify
@@ -44,18 +48,15 @@ export default {
     login: function () {
       if (this.identify != this.identifyCode) {
         this.$message.error('验证码错误')
-      } else {
-        this.$axios.get('http://rap2api.taobao.org/app/mock/148593/users', {
-          params: {
-            email: this.username,
-            password: this.$md5(this.password)
-          },
-          withCredentials: true
-        }).then(function (r) {
-          console.log(r.data.state)
-        }).catch(function (r) {
-          console.log(r)
-        })
+      } 
+      else if(!/^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/.test(this.username)){
+        this.$message.error('邮箱格式不合法')
+      }
+      else if(!/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test(this.password)){
+        this.$message.error('密码格式不正确')
+      }
+      else {
+        // 前端验证成功，可以请求后端数据
       }
     },
     randomNum(min, max) {
@@ -74,7 +75,27 @@ export default {
     },
     forgot(){
       this.forgotVisible = true;
-    }
+    },
+    submitReg(){
+      let emailTest = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+      let pwdTest = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/;
+      let nameTest = /^[\u4e00-\u9fa5]{2,4}$/
+      if(!emailTest.test(this.regInfo.email)){
+        this.$message.error('邮箱格式不合法')
+      }
+      else if(!pwdTest.test(this.regInfo.password)){
+        this.$message.error('密码格式不正确')
+      }
+      else if(this.regInfo.password != this.regInfo.passwordCfm){
+        this.$message.error('两次输入密码不一致')
+      }
+      else if(!nameTest.test(this.regInfo.name)){
+        this.$message.error('姓名必须为中文')
+      }
+      else{
+        // 前端验证成功，可以提交给后端数据
+      }
+    },
   },
   data() {
     return {
@@ -85,6 +106,12 @@ export default {
       identifyCode: "",
       regVisible:false,
       forgotVisible:false,
+      regInfo:{
+        email:'',
+        password:'',
+        passwordCfm:'',
+        name:''
+      }
     }
   },
   mounted() {

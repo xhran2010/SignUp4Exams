@@ -5,7 +5,7 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
-import SIdentify from './components/identify'
+import SIdentify from './components/Tools/identify'
 import axios from 'axios'
 import md5 from 'js-md5'
 
