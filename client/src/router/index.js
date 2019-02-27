@@ -3,11 +3,9 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Default from '@/components/Home/Default'
 import Home from '@/components/Home/Home'
-import Profile from '@/components/Me/Profile'
-import ChangePwd from '@/components/Me/ChangePwd'
+import Profile from '@/components/Profile'
 import SignUp from '@/components/SignUp'
-import Payment from '@/components/Payment'
-import Scores from '@/components/Scores'
+import MyExams from '@/components/MyExams'
 
 Vue.use(Router)
 
@@ -30,14 +28,9 @@ export default new Router({
           component:Default
         },
         {
-          path:'/home/me/profile',
+          path:'/home/profile',
           name:'Profile',
           component:Profile
-        },
-        {
-          path:'/home/me/changepwd',
-          name:'ChangePwd',
-          component:ChangePwd
         },
         {
           path:'/home/signup',
@@ -45,15 +38,10 @@ export default new Router({
           component:SignUp
         },
         {
-          path:'/home/payment',
-          name:'Payment',
-          component:Payment
+          path:'/home/myexams',
+          name:'MyExams',
+          component:MyExams
         },
-        {
-          path:'/home/scores',
-          name:'Scores',
-          component:Scores
-        }
       ]
     }
   ]
