@@ -8,7 +8,8 @@ import SignUp from '@/components/Home/SignUp'
 import MyExams from '@/components/Home/MyExams'
 import adminLogin from '@/components/Admin/Login'
 import adminHome from '@/components/Admin/Home/Home'
-
+import adminDefault from '@/components/Admin/Home/Default'
+import adminSubjects from '@/components/Admin/Home/Subjects'
 Vue.use(Router)
 
 export default new Router({
@@ -54,7 +55,17 @@ export default new Router({
     {
       path:'/admin/home',
       name:'adminHome',
-      component:adminHome
+      component:adminHome,
+      children:[
+        {
+        path:'/admin/home/default',
+        name:'adminDefault',
+        component:adminDefault
+      },{
+        path:'/admin/home/subjects',
+        name:'adminSubjects',
+        component:adminSubjects
+      }]
     }
   ]
 })

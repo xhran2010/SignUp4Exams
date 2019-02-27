@@ -64,11 +64,10 @@ export default {
             password:this.password
           }}).then(function(r){
             that.$message(r.data.message)
-            if(r.data.message == '登录成功'){
-              that.$cookies.set('token',r.data.token,60*60*2)
-              that.$router.push('/home')
+            if(r.data.state == true){
+              that.$cookies.set('token',r.data.token,60*60)
+              that.$router.push('/home/default')
             }
-            
           }).catch(function(r){
             console.log(r)
           })
