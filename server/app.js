@@ -10,8 +10,21 @@ const PrivateKey = "skey";
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const userinfoRouter = require('./routes/userinfo');
+const subjectsRouter = require('./routes/subjects');
 
 const app = express();
+
+app.use("*", function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  if (req.method === 'OPTIONS') {
+    res.send(200)
+  } else {
+    next()
+  }
+});
 
 app.use(expressJWT({
   secret: PrivateKey   
@@ -40,6 +53,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/userinfo',userinfoRouter);
+app.use('/subjects',subjectsRouter);
 
 app.get('/getData', function (req, res) {
   res.send(req.user);

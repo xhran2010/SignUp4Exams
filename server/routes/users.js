@@ -15,25 +15,35 @@ router.get('/', async function(req, res, next) {
     "state": false,
     "message": ""
   }
-  await knex("users").where("email", "=", query.email).then(async e=>{
-    console.log(JSON.stringify(e));
-
-    if(utility.md5(query.password)==e[0].password){
-      toBack.state = true;
-      toBack.userID = e.userID;
-      toBack.message = "登录成功";
-      toBack.token = jwt.sign({
-          userID: e[0].userID, 
-          email: e[0].email
-        },
-        PrivateKey,
-        {expiresIn: 60 * 60
-      });
-    } else {
-      toBack.message = "密码错误"
-    }
-  })
-  res.json(toBack);
+  if('email' in query && 'password' in query){
+    await knex("users").where("email", "=", query.email).then(async e=>{
+      console.log(JSON.stringify(e));
+  
+      if(utility.md5(query.password)==e[0].password){
+        toBack.state = true;
+        toBack.userID = e.userID;
+        toBack.message = "登录成功";
+        toBack.token = jwt.sign({
+            userID: e[0].userID, 
+            email: e[0].email
+          },
+          PrivateKey,
+          {expiresIn: 60 * 60
+        });
+      } else {
+        toBack.message = "密码错误"
+      }
+    });
+    res.json(toBack);
+  } else {
+    toBack.message = "参数错误";
+    toBack.req = {};
+    toBack.req.params = req.params;
+    toBack.req.body = req.body;
+    toBack.req.query = req.query;
+    toBack.req.headers = req.headers;
+    res.json((toBack));
+  }
 });
 
 // 用户注册
@@ -50,43 +60,52 @@ router.post('/', async function(req, res, next) {
     state:false,
     userID:""
   }
+  if('email' in body && 'password' in body && 'username' in body){
+    await knex("users").havingIn("email", body.email).then(async e=>{
+      if(e.length>0){
+        console.log(`register failure: ${JSON.stringify(e)}`);
+        toBack.message = "用户已注册";
+      } else {
+        let userID = uuid.v1();
+        
+        knex("users").insert({
+          "userID": userID,
+          "email": body.email,
+          "activation": false,
+          "password": utility.md5(body.password)
+        }).then(async e=>{
+          if(e!=0){
+            console.log(`Insert Result is ${e}`);
+          }
+        })
 
-  await knex("users").havingIn("email", body.email).then(async e=>{
-    if(e.length>0){
-      console.log(`register failure: ${e}`);
-      // res.send('post with failure');
-    } else {
-      let userID = uuid.v1();
-      
-      knex("users").insert({
-        "userID": userID,
-        "email": body.email,
-        "activation": false,
-        "password": utility.md5(body.password)
-      }).then(async e=>{
-        if(e!=0){
-          console.log(`Insert Result is ${e}`);
-        }
-      })
-
-      knex("userinfo").insert({
-        userID: userID,
-        username: body.username,
-        gender: "m",
-        age: 1,
-        phone: ""
-      }).then(async e=>{
-        if(e!=0){
-          console.log(`Insert Result is ${e}`);
-        }
-      })
-      
-      toBack.state = true;
-      toBack.userID = userID;
-    }    
-  })
-  console.log(`toBack: ${JSON.stringify(toBack)}`);
-  res.send(toBack);
+        knex("userinfo").insert({
+          userID: userID,
+          username: body.username,
+          gender: "m",
+          age: 1,
+          phone: ""
+        }).then(async e=>{
+          if(e!=0){
+            console.log(`Insert Result is ${e}`);
+          }
+        })
+        
+        toBack.state = true;
+        toBack.userID = userID;
+      }    
+    })
+    console.log(`toBack: ${JSON.stringify(toBack)}`);
+    res.send(toBack);
+  } else {
+    toBack.message = "参数错误";
+    toBack.req = {};
+    toBack.req.params = req.params;
+    toBack.req.body = req.body;
+    toBack.req.query = req.query;
+    toBack.req.headers = req.headers;
+    res.json((toBack));
+  }
 });
 
 
