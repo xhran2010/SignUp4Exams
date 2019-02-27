@@ -41,6 +41,7 @@ export default {
   components: {
     's-identify': SIdentify
   },
+  inject:['reload'],
   methods: {
     reg(){
       this.regVisible = true
@@ -63,11 +64,14 @@ export default {
             email:this.username,
             password:this.password
           }}).then(function(r){
-            that.$message(r.data.message)
+            console.log(r.data)
             if(r.data.state == true){
               that.$cookies.set('token',r.data.token,60*60)
+              that.$cookies.set('userID',r.data.userID,60*60)
               that.$router.push('/home/default')
+              that.$router.go(0)
             }
+            else that.$message(r.data.message)
           }).catch(function(r){
             console.log(r)
           })
@@ -95,6 +99,7 @@ export default {
       let emailTest = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
       let pwdTest = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/;
       let nameTest = /^[\u4e00-\u9fa5]{2,4}$/
+      let that = this
       if(!emailTest.test(this.regInfo.email)){
         this.$message.error('邮箱格式不合法')
       }
@@ -113,10 +118,11 @@ export default {
           email:this.regInfo.email,
           password:this.regInfo.password,
           username:this.regInfo.name
-        },{headers:{'Access-Control-Allow-Origin':'*'}}).then(function(r){
-          console.log(r.data)
+        }).then(function(r){
+          that.$message(r.data.state?"注册成功":"注册失败")
+          that.regVisible = false
         }).catch(function(r){
-          console.log('error:'+r)
+          console.log(r)
         })
       }
     },
@@ -141,6 +147,25 @@ export default {
   mounted() {
     this.identifyCode = "";
     this.makeCode(this.identifyCodes, 4);
+  },
+  beforeMount () {
+    let that = this
+    let token = this.$cookies.get('token')
+    let userID = this.$cookies.get('userID')
+    this.$axios.get('http://115.159.211.43:3000/userinfo/'+userID,{
+      params:{
+        method:'查询用户信息'
+      },
+      headers:{
+        'authorization':'Bearer '+token
+      }
+    }).then(function(r){
+      console.log(r.data)
+      if(r.data.state == true){
+        that.$router.push('/home/default')
+        that.$router.go(0)
+      }
+    })
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div v-if="show">
         <el-card>
-            {{username}}，欢迎您进入考试在线报名系统！
+            {{username}}欢迎您进入考试在线报名系统！
         </el-card>
         <el-card>
             <div slot="header">
@@ -9,7 +9,7 @@
             </div>
             <div>
                 <div style="text-align:center;float:left;width:25%;">
-                    <p>可报名考试</p>
+                    <p>所有考试</p>
                     <p class="number">{{count.available}}</p>
                 </div>
                 <div style="text-align:center;float:left;width:25%;">
@@ -36,16 +36,56 @@
 
 <script>
 export default {
+    inject:['reload'],
     data () {
         return {
-            username:'辛浩然',
+            username:'',
             count:{
                 available:0,
                 topay:0,
                 ready:0,
                 ended:0
-            }
+            },
+            show:false
         }
+    },
+    beforeMount () {
+        let that = this
+        let token = this.$cookies.get('token')
+        let userID = this.$cookies.get('userID')
+        // 查询用户名
+        this.$axios.get('http://115.159.211.43:3000/userinfo/' + userID, {
+          params: {
+            method: '查询用户信息'
+          },
+          headers: {
+            'authorization': 'Bearer ' + token
+          }
+        }).then(function (r) {
+          console.log(r.data)
+          that.username = r.data.username + '，'
+          that.show = true
+        }).catch(function (r) {
+            console.log(r)
+        })
+        /*
+        // 查询可报名考试
+        this.$axios.get('http://115.159.211.43:3000/userinfo/'+userID+'/subjects', {
+          params: {
+            method: '查询用户科目',
+            userID:userID
+          },
+          headers: {
+            'authorization': 'Bearer ' + token
+          }
+        }).then(function (r) {
+            console.log(r.data)
+            that.count.available = r.data.subjects.length
+        }).catch(function (r) {
+            console.log('连接错误')
+        })
+        */
+       
     }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="show">
     <el-container class="all">
       <el-header>
             <div class="title"><span>考试在线报名系统</span></div>
@@ -40,3 +40,38 @@
 .title{font-size: 20px;color:white;line-height: 60px;display: inline;}
 
 </style>
+
+<script>
+export default {
+  beforeMount () {
+    let that = this
+    this.$axios.get('http://115.159.211.43:3000/userinfo/'+this.userID,{
+      params:{
+        method:'查询用户信息'
+      },
+      headers:{
+        'authorization':'Bearer '+this.token
+      }
+    }).then(function(r){
+      console.log(r.data)
+      if(r.data.state == false){
+        that.$router.push('/')
+        that.$router.go(0)
+      }
+      else{
+        that.show = true
+      }
+    }).catch(function(r){
+        that.$router.push('/')
+        that.$router.go(0)
+    })
+  },
+  data () {
+    return {
+      show:false,
+      token:this.$cookies.get('token'),
+      userID:this.$cookies.get('userID'),
+    }
+  }
+}
+</script>
