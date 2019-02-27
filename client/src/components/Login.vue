@@ -46,7 +46,7 @@ export default {
       this.regVisible = true
     },
     login: function () {
-      this.refreshCode()
+      let that = this
       if (this.identify != this.identifyCode) {
         this.$message.error('验证码错误')
       } 
@@ -57,8 +57,23 @@ export default {
         this.$message.error('密码格式不正确')
       }
       else {
-        // 前端验证成功，可以请求后端数据
+        this.$axios.get('http://115.159.211.43:3000/users',{
+          params:{
+            method:'用户登录',
+            email:this.username,
+            password:this.password
+          }}).then(function(r){
+            that.$message(r.data.message)
+            if(r.data.message == '登录成功'){
+              that.$cookies.set('token',r.data.token,60*60*2)
+              that.$router.push('/home')
+            }
+            
+          }).catch(function(r){
+            console.log(r)
+          })
       }
+      this.refreshCode()
     },
     randomNum(min, max) {
       return Math.floor(Math.random() * (max - min) + min);
