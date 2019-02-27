@@ -3,9 +3,11 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Default from '@/components/Home/Default'
 import Home from '@/components/Home/Home'
-import Profile from '@/components/Profile'
-import SignUp from '@/components/SignUp'
-import MyExams from '@/components/MyExams'
+import Profile from '@/components/Home/Profile'
+import SignUp from '@/components/Home/SignUp'
+import MyExams from '@/components/Home/MyExams'
+import adminLogin from '@/components/Admin/Login'
+import adminHome from '@/components/Admin/Home/Home'
 
 Vue.use(Router)
 
@@ -43,6 +45,16 @@ export default new Router({
           component:MyExams
         },
       ]
+    },
+    {
+      path:'/admin',
+      name:'adminLogin',
+      component:adminLogin,
+    },
+    {
+      path:'/admin/home',
+      name:'adminHome',
+      component:adminHome
     }
   ]
 })
